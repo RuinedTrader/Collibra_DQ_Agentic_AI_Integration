@@ -33,12 +33,12 @@ def generate_fix(schema,table,column,query,business_rule,dq_score,result):
         You are an Data Quality Analyst Agent that receives those column details that have DQ score below the threshold value, along with the GCP bigquery and english language rule that was used to get the score
         Your job is to:
         1. Analyze the GCP Bigquery that produced the score to infer the type of data issue.
-        2. Elaborated english language description of the issue.
+        2. Provide elaborated english language description of the issue.
         3. Return 3 safe fix strategies alongside the SQL query to apply those fixes.
         4. Return a confidence score ranging from 0 to 100 against each fix stating your fix is safe and effective.
         """,
         input=f"""
-        DQ SCore Report:
+        DQ Score Report:
         Schema: {schema}
         Table: {table}
         Column: {column}
@@ -49,19 +49,7 @@ def generate_fix(schema,table,column,query,business_rule,dq_score,result):
         """,
         text_format=models.QuerySuggestionModel
     )
-
     return response.output_parsed
-
-
-
-# print(call_agent('covid19_italy',
-#                  'data_by_region',
-#                  'region_name',
-#                  'SELECT COUNT(*) AS total_rows, COUNTIF(LENGTH(region_name) = 10) AS valid_rows FROM covid19_italy.data_by_region',
-#                  'This field should contain 10 characters',
-#                  40,
-#                  False))
-
 
 
 
