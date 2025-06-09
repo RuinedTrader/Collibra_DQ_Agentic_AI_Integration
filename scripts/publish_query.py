@@ -50,7 +50,7 @@ def add_attribute(asset_id, attribute_type_id, value):
     url = collibra_host_endpoint + collibra_config["asset_endpoint"]+f'/{asset_id}/attributes'
     headers = {'Content-type': 'application/json', 'accept': 'application/json'}
     request_body = {"typeId": attribute_type_id, "values": [value]}
-    requests.post(url, headers=headers, json=request_body, auth=auth)
+    requests.put(url, headers=headers, json=request_body, auth=auth)
 
 
 def add_asset(asset_name, display_name, asset_type, domain_id, status_id):
