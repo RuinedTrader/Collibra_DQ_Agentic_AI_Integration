@@ -95,7 +95,6 @@ def publish_queries_in_collibra():
                 related_rule_id = each_relation.get('target').get('id')
                 rule_statement = find_asset_attribute_value(related_rule_id,collibra_config['rule_statement_attribute_type_id'])
                 query = ai_agent.generate_query(rule_statement).replace('<schema>',schema_name).replace('<table>',table_name).replace('<column>',column_name)
-                print(query)
                 add_attribute(related_rule_id,collibra_config['technical_rule_attribute_type_id'],query)
 
 
