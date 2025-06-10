@@ -76,6 +76,14 @@ def add_relation(source_id, target_id, relation_type_id):
     }
     requests.post(url, json=request_body, headers=headers, auth=auth)
 
+def search_activities_for_attributes(context_id):
+    url = collibra_host_endpoint + collibra_config["activities_endpoint"]
+    headers = {'accept': '*/*'}
+    params = {'contextId': context_id, 'categories': 'ATTRIBUTE','resourceDiscriminators':'NumericAttribute'}
+
+    return requests.get(url, params=params, headers=headers,auth=auth).json().get('results')
+
+
 
 def publish_queries_in_collibra():
     data_element_response = find_asset(collibra_config['data_element_domain_id'],collibra_config['data_element_asset_type_id'])
@@ -99,7 +107,7 @@ def publish_queries_in_collibra():
 
 
 publish_queries_in_collibra()
-
+# print(search_activities_for_attributes('01975938-3d8b-763d-b457-059feeb7a16a'))
 
 
 

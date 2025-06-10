@@ -30,7 +30,7 @@ def generate_fix(schema,table,column,query,business_rule,dq_score,result):
     response = client.responses.parse(
         model="gpt-4.1",
         instructions="""
-        You are an Data Quality Analyst Agent that receives those column details that have DQ score below the threshold value, along with the GCP bigquery and english language rule that was used to get the score
+        You are an Data Quality Analyst Agent that receives the column that have DQ score below the threshold value, along with the GCP bigquery and english language rule that was used to get the score
         Your job is to:
         1. Analyze the GCP Bigquery that produced the score to infer the type of data issue.
         2. Provide elaborated english language description of the issue.

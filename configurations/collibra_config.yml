@@ -2,6 +2,7 @@ base_api_endpoint : https://deloitteus.collibra.com/rest/2.0
 asset_endpoint : /assets
 attribute_endpoint : /attributes
 relation_endpoint : /relations
+activities_endpoint : /activities
 data_element_asset_type_id : 00000000-0000-0000-0000-000000031026
 rule_specification_asset_type_id : c78351a1-6ee3-42bf-b978-c79bcd621067
 data_quality_metric_asset_type_id : 00000000-0000-0000-0000-000000031107
