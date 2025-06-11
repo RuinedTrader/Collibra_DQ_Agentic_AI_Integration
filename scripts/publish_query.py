@@ -1,3 +1,5 @@
+import json
+
 import yaml
 import requests
 from requests.auth import HTTPBasicAuth
@@ -79,7 +81,7 @@ def add_relation(source_id, target_id, relation_type_id):
 def search_activities_for_attributes(context_id):
     url = collibra_host_endpoint + collibra_config["activities_endpoint"]
     headers = {'accept': '*/*'}
-    params = {'contextId': context_id, 'categories': 'ATTRIBUTE','resourceDiscriminators':'NumericAttribute'}
+    params = {'contextId': context_id, 'categories': 'ATTRIBUTE','resourceDiscriminators':'NumericAttribute','activityType':'ADD'}
 
     return requests.get(url, params=params, headers=headers,auth=auth).json().get('results')
 
@@ -107,7 +109,6 @@ def publish_queries_in_collibra():
 
 
 publish_queries_in_collibra()
-# print(search_activities_for_attributes('01975938-3d8b-763d-b457-059feeb7a16a'))
 
 
 

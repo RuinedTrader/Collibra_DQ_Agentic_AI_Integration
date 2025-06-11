@@ -26,17 +26,27 @@ def generate_query(business_rules):
 
 
 
-def generate_fix(schema,table,column,query,business_rule,dq_score,result):
+def generate_fix(schema,table,column,query,business_rule,dq_score,result,history):
     response = client.responses.parse(
         model="gpt-4.1",
         instructions="""
-        You are an Data Quality Analyst Agent that receives the column that have DQ score below the threshold value, along with the GCP bigquery and english language rule that was used to get the score
-        Your job is to:
-        1. Analyze the GCP Bigquery that produced the score to infer the type of data issue.
-        2. Provide elaborated english language description of the issue.
-        3. Return 3 safe fix strategies alongside the SQL query to apply those fixes.
-        4. Return a confidence score ranging from 0 to 100 against each fix stating your fix is safe and effective.
+        You are a Data Quality Analyst Agent that receives the column details where DQ score dropped below threshold.
+        
+        You will be provided with:
+        1. Schema and Table names
+        2. The Column name
+        2. English language rule on the column for query generation
+        3. The BigQuery query that produced the DQ score.
+        4. The DQ score history over time.
+        
+        Your tasks:
+        1. Analyze the provided BigQuery query to infer possible data issues.
+        2. Analyse DQ score history to detect trends or time-based patterns. If the history has DQ score just for a single day, mention accordingly that there is not much details to establish trend.
+        2. Provide an elaborated english description of the issue.
+        3. Return 3 safe fix strategies with corresponding SQL query to apply those fixes (Use only the provided details to generate the query).
+        4. Return a confidence score ranging from 0 to 100 against each fix indicating safety and effectiveness.
         """,
+
         input=f"""
         DQ Score Report:
         Schema: {schema}
@@ -44,8 +54,9 @@ def generate_fix(schema,table,column,query,business_rule,dq_score,result):
         Column: {column}
         DQ score: {dq_score}
         Pass : {result}
-        Query used to get the result : {query}
-        English language rule for the column : {business_rule} 
+        History of DQ scores : {history}
+        Query used for score : {query}
+        English language rule : {business_rule}
         """,
         text_format=models.QuerySuggestionModel
     )

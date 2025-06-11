@@ -21,3 +21,10 @@ data_element_domain_id : 0196e86c-03e2-74e3-bba7-20e0ae01510d
 technical_rule_attribute_type_id : 01970fdb-6de1-7b32-8912-ace368669b9d
 dqm_domain_id : 0196e992-e49f-743c-ac4f-84f4ab791323
 approved_status_id : 00000000-0000-0000-0000-000000005025
+data_issue_asset_type_id : 00000000-0000-0000-0000-000000031001
+description_attribute_type_id : 00000000-0000-0000-0000-000000003114
+trend_analysis_attribute_type_id : 01975f5d-e375-7e56-8fc9-37708a55bf8c
+resolution_attribute_type_id : 00000000-0000-0000-0000-000000000217
+data_element_data_issue_relation_type_id : 01975f61-27f3-7a47-82e6-6fcff8569912
+data_concern_dqm_relation_type_id : 01975f61-d99d-7009-80ee-72065f4e4b38
+data_issue_domain_id : 01975f7b-98d7-7a49-a137-fc208ceb468f
