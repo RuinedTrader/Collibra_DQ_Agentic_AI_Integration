@@ -1,14 +1,20 @@
+import functions_framework
 import yaml
 import requests
 from requests.auth import HTTPBasicAuth
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-
 with open('collibra_config.yml', mode='r') as config_file:
     collibra_config = yaml.load(config_file, Loader=yaml.FullLoader)
 
 collibra_host_endpoint = collibra_config['base_api_endpoint']
+username = collibra_config['collibra_username']
+password = collibra_config['collibra_password']
+openai_api_key = collibra_config['openai_api_key']
+
+auth = HTTPBasicAuth(username, password)
+client = OpenAI(api_key=openai_api_key)
 
 
 def generate_query(business_rules):
@@ -55,14 +61,17 @@ def find_asset_attribute_value(asset_id, attribute_type_id):
     url = collibra_host_endpoint + collibra_config["attribute_endpoint"]
     headers = {'accept': 'application/json'}
     params = {'typeIds': attribute_type_id, 'assetId': asset_id}
-    return requests.get(url=url, headers=headers, params=params, auth=auth).json().get('results')[0].get('value')
+    attribute = requests.get(url=url, headers=headers, params=params, auth=auth).json().get('results')
+    if len(attribute) != 0:
+        return attribute[0].get('value')
+    return None
 
 
 def add_attribute(asset_id, attribute_type_id, value):
     url = collibra_host_endpoint + collibra_config["asset_endpoint"] + f'/{asset_id}/attributes'
     headers = {'Content-type': 'application/json', 'accept': 'application/json'}
     request_body = {"typeId": attribute_type_id, "values": [value]}
-    requests.post(url, headers=headers, json=request_body, auth=auth)
+    requests.put(url, headers=headers, json=request_body, auth=auth)
 
 
 def add_asset(asset_name, display_name, asset_type, domain_id, status_id):
@@ -90,45 +99,24 @@ def add_relation(source_id, target_id, relation_type_id):
     requests.post(url, json=request_body, headers=headers, auth=auth)
 
 
-def publish_queries_in_collibra():
-    data_element_response = find_asset(collibra_config['data_element_domain_id'],
-                                       collibra_config['data_element_asset_type_id'])
+@functions_framework.http
+def publish_queries_in_collibra(request):
+    rule_id = request.args.get('rule_id')
 
-    for each_de in data_element_response:
-        de_id = each_de.get('id')
-        de_rule_relations = find_relations_by_source(de_id, collibra_config[
-            'data_element_rule_specification_relation_type_id'])
+    # get DE from rule
+    de_rule_rel = find_relations_by_target(rule_id, collibra_config['data_element_rule_specification_relation_type_id'])[0]
+    de_id = de_rule_rel.get('source').get('id')
 
-        if len(de_rule_relations) > 0:
-            column_de_relation = \
-            find_relations_by_target(de_id, collibra_config['column_data_element_relation_type_id'])[0]
-            source_details = column_de_relation.get('source').get('name').split('.')
-            schema_name = source_details[0]
-            table_name = source_details[1]
-            column_name = source_details[2]
+    # get column/table
+    column_de_relation = find_relations_by_target(de_id, collibra_config['column_data_element_relation_type_id'])[0]
+    source_details = column_de_relation.get('source').get('name').split('.')
+    schema_name = source_details[0]
+    table_name = source_details[1]
+    column_name = source_details[2]
 
-            for each_relation in de_rule_relations:
-                related_rule_id = each_relation.get('target').get('id')
-                rule_statement = find_asset_attribute_value(related_rule_id,
-                                                            collibra_config['rule_statement_attribute_type_id'])
-                query = generate_query(rule_statement).replace('<schema>', schema_name).replace('<table>',
-                                                                                                table_name).replace(
-                    '<column>', column_name)
-                add_attribute(related_rule_id, collibra_config['technical_rule_attribute_type_id'], query)
+    rule_statement = find_asset_attribute_value(rule_id,
+                                                collibra_config['rule_statement_attribute_type_id'])
+    query = generate_query(rule_statement).replace('<schema>', schema_name).replace('<table>',table_name).replace('<column>', column_name)
 
-
-publish_queries_in_collibra()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    add_attribute(rule_id, collibra_config['technical_rule_attribute_type_id'], query)
+    return 'Run complete'

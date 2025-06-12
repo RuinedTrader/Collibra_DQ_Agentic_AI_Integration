@@ -41,12 +41,14 @@ def find_relations_by_target(target_asset_id,relation_type_id):
     return requests.get(url=url,headers=headers,params=params,auth=auth).json().get('results')
 
 
-def find_asset_attribute_value(asset_id,attribute_type_id):
+def find_asset_attribute_value(asset_id, attribute_type_id):
     url = collibra_host_endpoint + collibra_config["attribute_endpoint"]
     headers = {'accept': 'application/json'}
     params = {'typeIds': attribute_type_id, 'assetId': asset_id}
-    return requests.get(url=url, headers=headers, params=params, auth=auth).json().get('results')[0].get('value')
-
+    attribute =  requests.get(url=url, headers=headers, params=params, auth=auth).json().get('results')
+    if len(attribute) != 0:
+        return attribute[0].get('value')
+    return None
 
 def add_attribute(asset_id, attribute_type_id, value):
     url = collibra_host_endpoint + collibra_config["asset_endpoint"]+f'/{asset_id}/attributes'

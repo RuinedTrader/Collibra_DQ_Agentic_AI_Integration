@@ -12,7 +12,7 @@ def generate_dq_metric():
             related_rule_name = each_relation.get('target').get('name')
             query = collibra_util.find_asset_attribute_value(related_rule_id,collibra_util.collibra_config['technical_rule_attribute_type_id'])
 
-            if len(query.strip()) !=0:
+            if query is not None and len(query.strip()) != 0:
                 output = list(bq.run_query(query))[0]
                 loaded_rows = output[0]
                 passed_rows = output[1]

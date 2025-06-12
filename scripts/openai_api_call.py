@@ -26,22 +26,26 @@ def generate_query(business_rules):
 
 
 
-def generate_fix(schema,table,column,query,business_rule,dq_score,result,history):
+def generate_fix(schema, table, column, query, business_rule, dq_score, rows_passed, rows_failed, threshold, result,history):
     response = client.responses.parse(
         model="gpt-4.1",
         instructions="""
         You are a Data Quality Analyst Agent that receives the column details where DQ score dropped below threshold.
-        
+
         You will be provided with:
         1. Schema and Table names
         2. The Column name
         2. English language rule on the column for query generation
         3. The BigQuery query that produced the DQ score.
-        4. The DQ score history over time.
-        
+        3. The DQ score (DQ score indicates the percentage of total rows that passed the implemented rule)
+        4. Rows passing the rule
+        5. Rows failing the rule
+        5. The threshold value for the rule
+        4. The DQ score history over time. 
+
         Your tasks:
         1. Analyze the provided BigQuery query to infer possible data issues.
-        2. Analyse DQ score history to detect trends or time-based patterns. If the history has DQ score just for a single day, mention accordingly that there is not much details to establish trend.
+        2. Analyse DQ score history to detect trends or time-based patterns. If the history has DQ score just for a single timeframe, mention accordingly that there is not much details to establish trend.
         2. Provide an elaborated english description of the issue.
         3. Return 3 safe fix strategies with corresponding SQL query to apply those fixes (Use only the provided details to generate the query).
         4. Return a confidence score ranging from 0 to 100 against each fix indicating safety and effectiveness.
@@ -52,11 +56,14 @@ def generate_fix(schema,table,column,query,business_rule,dq_score,result,history
         Schema: {schema}
         Table: {table}
         Column: {column}
-        DQ score: {dq_score}
-        Pass : {result}
-        History of DQ scores : {history}
         Query used for score : {query}
         English language rule : {business_rule}
+        DQ score: {dq_score}
+        Rows passed: {rows_passed}
+        Rows failed: {rows_failed}
+        Threshold: {threshold}
+        Pass : {result}
+        History of DQ scores : {history}
         """,
         text_format=models.QuerySuggestionModel
     )
