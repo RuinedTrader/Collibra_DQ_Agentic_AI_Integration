@@ -112,12 +112,30 @@ def publish_queries_in_collibra():
 
 publish_queries_in_collibra()
 
-
-
-
-
-
-
+# from datetime import datetime
+# def get_date_from_epoch(epoch_time):
+#     formatted_date = datetime.fromtimestamp(timestamp=epoch_time / 1000).strftime("%Y/%m/%d")
+#     return formatted_date
+#
+#
+# dqm_activity = search_activities_for_attributes('01976254-d9d6-7736-909a-bc799e425081')
+# dq_history = {}
+# for each_activity in dqm_activity:
+#     description = json.loads(each_activity['description'])
+#     if description.get('field') != 'Threshold' and description.get('field') != 'Loaded Rows':
+#         epoch_val = each_activity['timestamp']
+#         activity_datetime = get_date_from_epoch(epoch_val)
+#         field = description['field']
+#         value = description['new']['name']
+#         current_data_map = {field: value}
+#         if dq_history.get(activity_datetime) is not None:
+#             existing_data_list = dq_history[activity_datetime]
+#             if current_data_map not in existing_data_list:
+#                 existing_data_list.append(current_data_map)
+#         else:
+#             dq_history[activity_datetime] = [current_data_map]
+#
+# print(json.dumps(dq_history,indent=4))
 
 
 

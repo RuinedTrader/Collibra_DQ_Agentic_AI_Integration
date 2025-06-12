@@ -58,11 +58,13 @@ def generate_data_concern_and_fix():
                     activity_datetime = get_date_from_epoch(epoch_val)
                     field = description['field']
                     value = description['new']['name']
+                    current_data_map = {field: value}
                     if dq_history.get(activity_datetime) is not None:
-                        x = dq_history[activity_datetime]
-                        x.append({field: value})
+                        existing_data_list = dq_history[activity_datetime]
+                        if current_data_map not in existing_data_list:
+                            existing_data_list.append(current_data_map)
                     else:
-                        dq_history[activity_datetime] = [{field: value}]
+                        dq_history[activity_datetime] = [current_data_map]
 
             fixes_response = dq_agent.generate_fix(schema_name, table_name, column_name, query, rule_statement, dq_score,
                                           rows_passed, rows_failed, threshold, passing_flag, dq_history)
