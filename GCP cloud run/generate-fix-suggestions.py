@@ -218,16 +218,21 @@ def generate_data_concern_and_fix(request):
                 resolution = resolution + f"<p><strong>Resolution {count} :</strong>{each_fix.fix_strategy}</p><p><strong>Query :</strong> <code>{each_fix.fix_query}</code></p><p><strong>Confidence :</strong>{each_fix.confidence_score}%</p><br>"
                 count += 1
 
-            # create data issue
-            di_name = 'Data_Issue_' + de_name + '_' + str(random.randint(300000, 400000))
-            di_id = add_asset(di_name, di_name, collibra_config['data_issue_asset_type_id'],
-                              collibra_config['data_issue_domain_id'], collibra_config['approved_status_id'])
+            di_dqm_relations = find_relations_by_target(dqm_id, collibra_config[
+                'data_concern_dqm_relation_type_id'])
+
+            if len(di_dqm_relations) != 0:
+                di_id = di_dqm_relations[0].get('source').get('id')
+            else:
+                di_name = 'Data_Issue_' + de_name + '_' + str(random.randint(300000, 400000))
+                di_id = add_asset(di_name, di_name, collibra_config['data_issue_asset_type_id'],collibra_config['data_issue_domain_id'],collibra_config['approved_status_id'])
+                add_relation(de_id, di_id, collibra_config['data_element_data_issue_relation_type_id'])
+                add_relation(di_id, dqm_id, collibra_config['data_concern_dqm_relation_type_id'])
+
             add_attribute(di_id, collibra_config['description_attribute_type_id'], dq_issue)
             add_attribute(di_id, collibra_config['trend_analysis_attribute_type_id'], trend_analysis)
             add_attribute(di_id, collibra_config['resolution_attribute_type_id'], resolution)
 
-            add_relation(de_id, di_id, collibra_config['data_element_data_issue_relation_type_id'])
-            add_relation(di_id, dqm_id, collibra_config['data_concern_dqm_relation_type_id'])
 
     return 'Run Complete'
 
